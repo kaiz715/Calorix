@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+public func getRingValue(nutrient: Int, nutrientGoal: Int) -> CGFloat {
+    return CGFloat(Float(nutrient)/Float(nutrientGoal))
+}
+
 public struct StackedActivityRingViewConfig {
     var lineWidth: CGFloat
     var firstRingColor: Color = .green

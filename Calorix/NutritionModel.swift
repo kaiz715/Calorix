@@ -33,10 +33,8 @@ func getNutritionData(from imageData: Data) async -> NutritionData? {
         body.append(clrf)
 
         request.httpBody = body
-        print(request.httpBody)
         do {
             let (data, response) =  try await session.data(for: request)
-            print(data)
             let decoder = JSONDecoder()
             let nutritionData = try decoder.decode(NutritionData.self, from: data)
             return nutritionData
@@ -64,6 +62,17 @@ struct NutritionData: Codable, Equatable {
         self.carb_g = carb_g
         self.protein_g = protein_g
         self.fat_g = fat_g
+    }
+    
+    init(mealList: [Meal]) {
+        self.init()
+        
+        for nutritionData in mealList.map({ $0.nutritionData }) {
+            self.calories_kcal += nutritionData.calories_kcal
+            self.carb_g += nutritionData.carb_g
+            self.protein_g += nutritionData.protein_g
+            self.fat_g += nutritionData.fat_g
+        }
     }
 }
 

@@ -6,17 +6,35 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct CameraView: View {
     @State private var viewModel = ViewModel()
-    @Binding var meal: Meal
+    @Binding var path: NavigationPath
+    @Query var meals: [Meal]
+    @Environment(\.modelContext) var context
+    @State var newMeal: Meal?
+    
     
     private static let barHeightFactor = 0.15
     
     func recieveNutritionData(nutritionData: NutritionData, imageData: Data) {
-        meal.nutritionData = nutritionData
-        meal.imageData = imageData
-        meal.timestamp = Date()
+        if let newMeal = newMeal {
+            newMeal.nutritionData = nutritionData
+            newMeal.imageData = imageData
+            newMeal.timestamp = Date()
+        } else {
+            newMeal = Meal(nutritionData: nutritionData, imageData: imageData, timestamp: Date(), mealTime: .breakfast)
+        }
+        
+        context.insert(newMeal!)
+        do {
+            try context.save()
+        } catch {
+            print("Error adding new meal: \(error)")
+        }
+        
+        path.removeLast()
     }
     
     var body: some View {

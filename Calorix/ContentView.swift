@@ -9,30 +9,14 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    
-    
-    @State private var viewModel = ViewModel()
-    @Binding var meal: Meal
-    @State private var isShowingCameraView = true
+    var dailyNutritionGoal: DailyNutritionGoal = .init()
     
     var body: some View {
-        if isShowingCameraView {
-            CameraView(meal: $meal)
-                .ignoresSafeArea()
-                .onChange(of: meal.nutritionData) {
-                    isShowingCameraView = false
-                }
-        }
-        else {
-            MealNutritionView(meal: $meal)
-                .background(Color.blue)
-        }
-        
+        MealsListView(nutritionGoal: dailyNutritionGoal)
         
     }
 }
 
 #Preview {
-    @Previewable @State var meal: Meal = .init()
-    ContentView(meal: $meal)
+    ContentView()
 }

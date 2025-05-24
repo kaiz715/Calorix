@@ -46,10 +46,6 @@ struct NutritionDetailView: View {
         }
     }
     
-    func getRingValue(nutrient: Int, nutrientGoal: Int) -> CGFloat {
-        return CGFloat(Float(nutrient)/Float(nutrientGoal))
-    }
-    
 }
 
 #Preview {

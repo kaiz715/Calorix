@@ -10,12 +10,9 @@ import SwiftData
 
 @main
 struct CalorixApp: App {
-    
-    @State var meal: Meal = .init()
-
     var body: some Scene {
         WindowGroup {
-            ContentView(meal: $meal)
+            ContentView()
         }.modelContainer(for: Meal.self)
     }
 }

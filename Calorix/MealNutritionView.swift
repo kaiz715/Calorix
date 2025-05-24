@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct MealNutritionView: View {
-    
-    @Binding var meal: Meal
+    @Bindable var meal: Meal
+    var dailyNutritionGoal: DailyNutritionGoal
     
     var body: some View {
         VStack(spacing: 20){
@@ -17,9 +17,10 @@ struct MealNutritionView: View {
                 HStack {
                     TextField("Meal Name", text: $meal.nutritionData.name)
                         .font(.largeTitle)
+                        .foregroundStyle(.primary)
                         .autocorrectionDisabled(true)
                     Spacer()
-                }
+                }.padding(.horizontal, 20)
                 if let mealImageData = meal.imageData {
                     Image(data: mealImageData)?
                         .resizable()
@@ -32,40 +33,28 @@ struct MealNutritionView: View {
                     Text("No Image")
                 }
                 VStack{
+                    NutritionDetailView(nutritionData: meal.nutritionData, dailyNutritionGoal: dailyNutritionGoal)
+                        .padding(.bottom, 40)
+                    
                     HStack{
-                        Text("Calories")
+                        Text("Serving Size")
                         Spacer()
-                        TextField("Calories", value: $meal.nutritionData.calories_kcal, format: .number)
+                        TextField("Grams", value: $meal.nutritionData.calories_kcal, format: .number)
                             .textFieldStyle(.roundedBorder)
                             .multilineTextAlignment(.trailing)
                             .frame(width: 100, height: 30)
                     }
                     HStack{
-                        Text("Carbohydrates")
+                        Text("Meal Time")
                         Spacer()
-                        TextField("Carbohydrates", value: $meal.nutritionData.carb_g, format: .number)
-                            .textFieldStyle(.roundedBorder)
-                            .multilineTextAlignment(.trailing)
-                            .frame(width: 100, height: 30)
-                    }
-                    HStack{
-                        Text("Protiens")
-                        Spacer()
-                        TextField("Protiens", value: $meal.nutritionData.protein_g, format: .number)
-                            .textFieldStyle(.roundedBorder)
-                            .multilineTextAlignment(.trailing)
-                            .frame(width: 100, height: 30)
-                    }
-                    HStack{
-                        Text("Fats")
-                        Spacer()
-                        TextField("Fats", value: $meal.nutritionData.fat_g, format: .number)
-                            .textFieldStyle(.roundedBorder)
-                            .multilineTextAlignment(.trailing)
-                            .frame(width: 100, height: 30)
+                        Picker("Meal Time", selection: $meal.mealTime) {
+                            ForEach(MealTime.allCases, id: \.self) { value in
+                                Text(String(describing: value))
+                            }
+                        }
                     }
                 }
-                .padding(.horizontal)
+                .padding()
                 
             }
         }// on dismiss or exit save model context
@@ -73,6 +62,6 @@ struct MealNutritionView: View {
 }
 
 #Preview {
-    @Previewable @State var meal: Meal = Meal(id: .init(), nutritionData: .init(), imageData: UIImage(named: "sample")?.jpegData(compressionQuality: 1), timestamp: Date(), mealTime: .breakfast)
-    MealNutritionView(meal: $meal)
+    @Previewable @State var meal: Meal = Meal(id: .init(), nutritionData: .init(name: "Chicken", calories_kcal: 1500, carb_g: 50, protein_g: 40, fat_g: 30), imageData: UIImage(named: "sample")?.jpegData(compressionQuality: 1), timestamp: Date(), mealTime: .breakfast)
+    MealNutritionView(meal: meal, dailyNutritionGoal: .init())
 }

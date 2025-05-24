@@ -16,7 +16,7 @@ class Meal: Identifiable {
     var timestamp: Date
     var mealTime: MealTime
     
-    init(id: UUID = .init(), nutritionData: NutritionData, imageData: Data? = nil, timestamp: Date, mealTime: MealTime) {
+    init(id: UUID = .init(), nutritionData: NutritionData = .init(), imageData: Data? = nil, timestamp: Date = .init(), mealTime: MealTime = .breakfast) {
         self.id = id
         self.nutritionData = nutritionData
         self.imageData = imageData
@@ -24,19 +24,24 @@ class Meal: Identifiable {
         self.mealTime = mealTime
     }
     
-    init() {
-        self.id = .init()
-        self.nutritionData = .init()
-        self.imageData = nil
-        self.timestamp = Date()
-        self.mealTime = .breakfast
-    }
-    
 }
 
-public enum MealTime: String, Codable{
+public enum MealTime: String, Codable, CaseIterable, CustomStringConvertible{
     case breakfast
     case lunch
     case snack
     case dinner
+    
+    public var description: String {
+        switch self {
+        case .breakfast:
+            return "Breakfast"
+        case .lunch:
+            return "Lunch"
+        case .snack:
+            return "Snack"
+        case .dinner:
+            return "Dinner"
+        }
+    }
 }
