@@ -15,21 +15,23 @@ struct MealsListView: View {
     let nutritionGoal: DailyNutritionGoal
     
     var body: some View {
-        HStack {
-            Button {
-                changeDate(by: -1)
-            } label: {
-                Image(systemName: "chevron.left.circle.fill")
+        NavigationStack(path: $path){
+            HStack {
+                Button {
+                    changeDate(by: -1)
+                } label: {
+                    Image(systemName: "chevron.left.circle.fill")
+                }
+                Text(dateToString(selectedDate))
+                Button {
+                    changeDate(by: 1)
+                } label: {
+                    Image(systemName: "chevron.right.circle.fill")
+                }
             }
-            Text(dateToString(selectedDate))
-            Button {
-                changeDate(by: 1)
-            } label: {
-                Image(systemName: "chevron.right.circle.fill")
-            }
+            
+            MealsListViewHelper(path: $path, selectedDate: selectedDate, nutritionGoal: nutritionGoal)
         }
-        
-        MealsListViewHelper(path: $path, selectedDate: selectedDate, nutritionGoal: nutritionGoal)
         
     }
     
@@ -62,23 +64,22 @@ struct MealsListViewHelper: View {
     }
     
     var body: some View {
-        NavigationStack(path: $path){
-            NutritionDetailView(nutritionData: .init(mealList: meals), dailyNutritionGoal: nutritionGoal)
-                .padding(.vertical, 20)
-            
-            List{
-                mealTimeMealList(.breakfast)
-                mealTimeMealList(.lunch)
-                mealTimeMealList(.dinner)
-                mealTimeMealList(.snack)
-            }
-            .listStyle(GroupedListStyle())
-            .navigationDestination(for: Meal.self) { meal in
-                MealNutritionView(meal: meal, dailyNutritionGoal: nutritionGoal)
-            }
-            .navigationDestination(for: MealTime.self) { mealTime in
-                CameraView(path: $path, newMeal: .init(mealTime: mealTime))
-            }
+        
+        NutritionDetailView(nutritionValues: .init(mealList: meals), dailyNutritionGoal: nutritionGoal)
+            .padding(.vertical, 20)
+        
+        List{
+            mealTimeMealList(.breakfast)
+            mealTimeMealList(.lunch)
+            mealTimeMealList(.dinner)
+            mealTimeMealList(.snack)
+        }
+        .listStyle(GroupedListStyle())
+        .navigationDestination(for: Meal.self) { meal in
+            MealNutritionView(meal: meal, dailyNutritionGoal: nutritionGoal)
+        }
+        .navigationDestination(for: MealTime.self) { mealTime in
+            CameraView(path: $path, newMeal: .init(timestamp: selectedDate, mealTime: mealTime))
         }
     }
     
