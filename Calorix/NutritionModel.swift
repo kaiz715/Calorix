@@ -49,15 +49,13 @@ func getNutritionData(from imageData: Data) async -> NutritionData? {
     }
 }
 
-struct NutritionData: Codable, Equatable {
-    var name: String
+struct NutritionValues: Codable, Equatable {
     var calories_kcal: Int
     var carb_g: Int
     var protein_g: Int
     var fat_g: Int
     
-    init(name: String = "", calories_kcal: Int = 0, carb_g: Int = 0, protein_g: Int = 0, fat_g: Int = 0) {
-        self.name = name
+    init(calories_kcal: Int = 0, carb_g: Int = 0, protein_g: Int = 0, fat_g: Int = 0) {
         self.calories_kcal = calories_kcal
         self.carb_g = carb_g
         self.protein_g = protein_g
@@ -68,11 +66,33 @@ struct NutritionData: Codable, Equatable {
         self.init()
         
         for nutritionData in mealList.map({ $0.nutritionData }) {
-            self.calories_kcal += nutritionData.calories_kcal
-            self.carb_g += nutritionData.carb_g
-            self.protein_g += nutritionData.protein_g
-            self.fat_g += nutritionData.fat_g
+            self.calories_kcal += nutritionData.nutrition_values_per_100g.calories_kcal * nutritionData.servings * nutritionData.serving_size_g / 100
+            self.carb_g += nutritionData.nutrition_values_per_100g.carb_g * nutritionData.servings * nutritionData.serving_size_g / 100
+            self.protein_g += nutritionData.nutrition_values_per_100g.protein_g * nutritionData.servings * nutritionData.serving_size_g / 100
+            self.fat_g += nutritionData.nutrition_values_per_100g.fat_g * nutritionData.servings * nutritionData.serving_size_g / 100
         }
+    }
+}
+
+func getTotalNutritionValues(from nutritionData: NutritionData) -> NutritionValues {
+    return NutritionValues(
+        calories_kcal: nutritionData.serving_size_g * nutritionData.servings * nutritionData.nutrition_values_per_100g.calories_kcal / 100,
+        carb_g: nutritionData.serving_size_g * nutritionData.servings * nutritionData.nutrition_values_per_100g.carb_g / 100,
+        protein_g: nutritionData.serving_size_g * nutritionData.servings * nutritionData.nutrition_values_per_100g.protein_g / 100,
+        fat_g: nutritionData.serving_size_g * nutritionData.servings * nutritionData.nutrition_values_per_100g.fat_g / 100)
+}
+
+struct NutritionData: Codable, Equatable {
+    var name: String
+    var serving_size_g: Int
+    var servings: Int
+    var nutrition_values_per_100g: NutritionValues
+    
+    init(name: String = "", serving_size_g: Int = 0, servings: Int = 0, nutrition_values_per_100g: NutritionValues = .init()) {
+        self.name = name
+        self.serving_size_g = serving_size_g
+        self.servings = servings
+        self.nutrition_values_per_100g = nutrition_values_per_100g
     }
 }
 

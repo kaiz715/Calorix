@@ -14,15 +14,13 @@ struct CameraView: View {
     @Query var meals: [Meal]
     @Environment(\.modelContext) var context
     @State var newMeal: Meal?
-    
-    
-    private static let barHeightFactor = 0.15
+    @State var loadingNutritionData: Bool = false
+
     
     func recieveNutritionData(nutritionData: NutritionData, imageData: Data) {
         if let newMeal = newMeal {
             newMeal.nutritionData = nutritionData
             newMeal.imageData = imageData
-            newMeal.timestamp = Date()
         } else {
             newMeal = Meal(nutritionData: nutritionData, imageData: imageData, timestamp: Date(), mealTime: .breakfast)
         }
@@ -40,28 +38,38 @@ struct CameraView: View {
     var body: some View {
         GeometryReader { geometry in
             if let image = viewModel.currentFrame {
-                
-                Image(decorative: image, scale: 1)
+                Image(decorative: image, scale: 1.5)
                     .resizable()
-                    .scaledToFit()
-                    .frame(width: geometry.size.width,
-                           height: geometry.size.height)
+                    .scaledToFill()
+                    .ignoresSafeArea(edges: .bottom)
+                    .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
                     .overlay(alignment: .bottom) {
                         buttonView()
-                            .frame(height: geometry.size.height * Self.barHeightFactor)
+                            .frame(height: geometry.size.height * 0.15)
                             .background(.black.opacity(0.75))
                     }
+                    .overlay(alignment: .center) {
+                        if loadingNutritionData {
+                            loadingNutritionView()
+                                .frame(height: geometry.size.height, alignment: .center)
+                                .background(.black.opacity(0.75))
+                        }
+                    }
             } else {
-                ContentUnavailableView("Camera feed interrupted", systemImage: "xmark.circle.fill")
+                ContentUnavailableView("Loading Camera", systemImage: "camera.fill")
                                         .frame(width: geometry.size.width,
                            height: geometry.size.height)
             }
+        }
+        .onChange(of: viewModel.currentPhoto) {
+            loadingNutritionData = true
         }
         .onChange(of: viewModel.nutritionData) {
             if let vmNutritionData = viewModel.nutritionData, let vmImageData = viewModel.imageData {
                 recieveNutritionData(nutritionData: vmNutritionData, imageData: vmImageData)
             }
         }
+        .navigationBarTitle(Text("Take Meal Photo"), displayMode: .inline)
     }
     
     private func buttonView() -> some View {
@@ -77,14 +85,26 @@ struct CameraView: View {
                         ZStack {
                             Circle()
                                 .strokeBorder(.white, lineWidth: 3)
-                                .frame(width: 62, height: 62)
+                                .frame(width: 75, height: 75)
                             Circle()
                                 .fill(.white)
-                                .frame(width: 50, height: 50)
+                                .frame(width: 63, height: 63)
                         }
                     }
                 }
                 
+                Spacer()
+            }
+        }
+    }
+    
+    private func loadingNutritionView() -> some View {
+        VStack{
+            Spacer()
+            HStack{
+                Spacer()
+                ProgressView("Calculating Nutrition…")
+                    .foregroundColor(.white)
                 Spacer()
             }
             Spacer()
