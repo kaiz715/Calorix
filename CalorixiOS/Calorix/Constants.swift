@@ -7,5 +7,5 @@
 
 import Foundation
 
-let backendURLString = "http://192.168.0.53:8080"
+let backendURLString = "http://192.168.12.126:8080"
 let getImageNutritionUrl = "\(backendURLString)/services/getImageNutrition"

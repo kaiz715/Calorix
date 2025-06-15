@@ -95,9 +95,8 @@ struct MealNutritionView: View {
             if let imageData = meal.imageData{
                 Image(uiImage: UIImage(data: imageData)!)
                     .resizable()
-                    .ignoresSafeArea(edges: .bottom)
-                    .scaledToFill()
-                    .presentationDetents([.large, .medium])
+                    .scaledToFit()
+                    .presentationDetents([.large])
             }
         }
     }

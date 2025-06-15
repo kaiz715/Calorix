@@ -38,23 +38,27 @@ struct CameraView: View {
     var body: some View {
         GeometryReader { geometry in
             if let image = viewModel.currentFrame {
-                Image(decorative: image, scale: 1.5)
-                    .resizable()
-                    .scaledToFill()
-                    .ignoresSafeArea(edges: .bottom)
-                    .frame(width: geometry.size.width, height: geometry.size.height, alignment: .center)
-                    .overlay(alignment: .bottom) {
-                        buttonView()
-                            .frame(height: geometry.size.height * 0.15)
-                            .background(.black.opacity(0.75))
-                    }
-                    .overlay(alignment: .center) {
-                        if loadingNutritionData {
-                            loadingNutritionView()
-                                .frame(height: geometry.size.height, alignment: .center)
-                                .background(.black.opacity(0.75))
+                VStack{
+                    Spacer()
+                    Spacer()
+                    Image(decorative: image, scale: 1.5)
+                        .resizable()
+                        .scaledToFit()
+                        .ignoresSafeArea(edges: .bottom)
+                        .frame(width: geometry.size.width, alignment: .center)
+                        .overlay(alignment: .center) {
+                            if loadingNutritionData {
+                                loadingNutritionView()
+                                    .frame(height: geometry.size.height, alignment: .center)
+                                    .background(.black.opacity(0.75))
+                            }
                         }
-                    }
+                    Spacer()
+                    buttonView()
+                        .frame(height: geometry.size.height * 0.15)
+                        .background(.black.opacity(0.75))
+                    Spacer()
+                }
             } else {
                 ContentUnavailableView("Loading Camera", systemImage: "camera.fill")
                                         .frame(width: geometry.size.width,
