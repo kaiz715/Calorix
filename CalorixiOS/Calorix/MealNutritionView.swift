@@ -11,7 +11,6 @@ struct MealNutritionView: View {
     @Bindable var meal: Meal
     var dailyNutritionGoal: DailyNutritionGoal
     @State var showImage = false
-    @FocusState var servingSizeFocusState: Bool
     @FocusState var isInputActive: Bool
     
     var body: some View {
